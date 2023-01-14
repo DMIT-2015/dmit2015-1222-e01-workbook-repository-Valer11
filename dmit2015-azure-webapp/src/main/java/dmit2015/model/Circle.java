@@ -15,7 +15,7 @@ public class Circle {
         //Validation
         if(radius<=0){
         //    throw new Exception("Radius must be a positive value");//unhandled
-            throw new Exception("Radius must be a positive value");
+            throw new Exception("HA HA... exception here fucker. Radius must be a positive value");
         }
         this.radius = radius;
     }
@@ -60,12 +60,30 @@ public class Circle {
 
         //mutator example
         //change property value circle1.Radius = 5;
-        circle1.setRadius(5);
+//        circle1.setRadius(5);
+//
+//        //printing again
+//        System.out.printf("The radius of a circle1 is %s\n", circle1.getRadius());
+//        System.out.printf("The area of a circle1 is %.5f\n", circle1.Area()); //five decimal places
+//        System.out.printf("The radius of a circle1 is %.2f", circle1.Perimeter());
 
-        //printing again
-        System.out.printf("The radius of a circle1 is %s\n", circle1.getRadius());
-        System.out.printf("The area of a circle1 is %.5f\n", circle1.Area()); //five decimal places
-        System.out.printf("The radius of a circle1 is %.2f", circle1.Perimeter());
+        //try and catch is the same
+        try
+        {
+            circle1.setRadius(5);
+
+
+            System.out.printf("The radius of a circle1 is %s\n", circle1.getRadius());
+            System.out.printf("The area of a circle1 is %.5f\n", circle1.Area());
+            System.out.printf("The radius of a circle1 is %.2f\n", circle1.Perimeter());
+
+            circle1.setRadius(-25);
+            System.out.println("A exception should have been thrown");
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
 
     }
 
