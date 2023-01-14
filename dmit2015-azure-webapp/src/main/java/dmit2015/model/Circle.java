@@ -9,9 +9,26 @@ public class Circle {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(double radius) throws Exception { //the THROWS part is added for exception to become HANDLED
+        this.radius = radius;
+        //exeptions
+        //Validation
+        if(radius<=0){
+        //    throw new Exception("Radius must be a positive value");//unhandled
+            throw new Exception("Radius must be a positive value");
+        }
         this.radius = radius;
     }
+    //RunTime exception
+    /*
+     public void setRadius(double radius) {
+        this.radius = radius;
+        if(radius<=0){
+            throw new RuntimeException("Radius must be a positive value");
+        }
+        this.radius = radius;
+    }
+     */
 
     //constructor can also be generated
 
@@ -51,7 +68,5 @@ public class Circle {
         System.out.printf("The radius of a circle1 is %.2f", circle1.Perimeter());
 
     }
-
-
 
 }
