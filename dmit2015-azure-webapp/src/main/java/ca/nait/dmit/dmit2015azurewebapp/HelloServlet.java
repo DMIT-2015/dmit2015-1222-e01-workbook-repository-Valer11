@@ -1,6 +1,6 @@
-package ca.nait.dmit.dmit2015azurewebapp;
+package ca.nait.dmit.dmit2015azurewebapp; //has to be all lower space.
 
-import java.io.*;
+import java.io.*; // same as using in C#
 
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
