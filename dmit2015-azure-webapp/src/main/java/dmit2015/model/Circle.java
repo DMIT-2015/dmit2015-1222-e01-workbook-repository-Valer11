@@ -43,20 +43,22 @@ public class Circle {
 
     //methods are the same as in C# ( are not generated)
 
-    public double Area(){
+    public double area(){
         return Math.PI * radius * radius;
     }
-    public double Perimeter(){
+    public double perimeter(){
         return 2 * Math.PI * radius;
     }
+
+
 
     public static void main(String[] args) { //type m or word main and press TAB key will generate main void method
         Circle circle1 = new Circle(); //creating method is te same as in C#
         //printing
         System.out.printf("The radius of a circle1 is %s\n", circle1.getRadius()); //!!!we need to call getter to get access!!! The %s is a placeholder for STRING... STRING is the safest way if you are not sure what will be the value. E - whole number, F - floating point etc.
         // read more about formatting https://www.baeldung.com/java-printstream-printf
-        System.out.printf("The area of a circle1 is %.5f\n", circle1.Area()); // decimal point floating value
-        System.out.printf("The radius of a circle1 is %.2f\n", circle1.Perimeter());
+        System.out.printf("The area of a circle1 is %.5f\n", circle1.area()); // decimal point floating value
+        System.out.printf("The radius of a circle1 is %.2f\n", circle1.perimeter());
 
         //mutator example
         //change property value circle1.Radius = 5;
@@ -74,8 +76,8 @@ public class Circle {
 
 
             System.out.printf("The radius of a circle1 is %s\n", circle1.getRadius());
-            System.out.printf("The area of a circle1 is %.5f\n", circle1.Area());
-            System.out.printf("The radius of a circle1 is %.2f\n", circle1.Perimeter());
+            System.out.printf("The area of a circle1 is %.5f\n", circle1.area());
+            System.out.printf("The radius of a circle1 is %.2f\n", circle1.perimeter());
 
             circle1.setRadius(-25);
             System.out.println("A exception should have been thrown");
