@@ -1,9 +1,10 @@
 package dmit2015.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class Rectangle {
     private double length;
     private double width;

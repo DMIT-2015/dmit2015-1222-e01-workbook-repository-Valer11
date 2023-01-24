@@ -1,5 +1,12 @@
 package dmit2015.model; //same as namaspace in C#
 
+//JavaDoc example
+/**
+ *This class models a Circle shape
+ * @author Valerii Dombrovskyi
+ * @version 2023-01-20
+ */
+
 //public class Circle {
 //    private double radius; //defining data field
 //
@@ -92,13 +99,26 @@ package dmit2015.model; //same as namaspace in C#
 //}
 
 public class Circle {
+
+    /**
+     * The radius of a Circle
+     */
     private double radius;
+
+    /**
+     * @return returns the radius of a Circle
+     */
 
     public double getRadius() {
         return radius;
     }
 
     public void setRadius(double radius) {
+
+        /**
+         * Change the radius of a Circel
+         * @param radius the new radius of a CIrcle
+         */
         if (radius > 0) {
             this.radius = radius;
         } else {
