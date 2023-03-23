@@ -1,9 +1,6 @@
 package dmit2015.entity;
 
-import dmit2015.repository.MovieRepository;
-import jakarta.inject.Inject;
 import jakarta.persistence.*;
-import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.validation.constraints.*;
@@ -11,14 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
  * The persistent class for the movies database table.
@@ -43,21 +37,21 @@ public class Movie implements Serializable {
     @NotNull(message = "The Release Date field is required")
     private LocalDate releaseDate;
 
-    @DecimalMin(value = "1.00",message = "The price must be a number between 0.00 and 100.00.")
-    @DecimalMax(value = "100.00",message = "The price must be a number between 0.00 and 100.00.")
+    @DecimalMin(value = "1.00", message = "The price must be a number between 0.00 and 100.00.")
+    @DecimalMax(value = "100.00", message = "The price must be a number between 0.00 and 100.00.")
     private BigDecimal price;
 
     @Column(nullable = false, length = 30)
     @NotBlank(message = "The field Genre is required.")
     @Pattern(regexp = "^[A-Z]+[a-zA-Z\\s]*$",  // Must only use letters.
-                                            // The first letter is required to be uppercase. White space, numbers, and special characters are not allowed.
+            // The first letter is required to be uppercase. White space, numbers, and special characters are not allowed.
             message = "The field Genre must match the regular expression '^[A-Z]+[a-zA-Z\\s]*$'.")
     private String genre;
 
     @Column(nullable = false, length = 5)
     @NotBlank(message = "The field Rating is required.")
     @Pattern(regexp = "^[A-Z]+[a-zA-Z0-9\"\"'\\s-]*$", // The first character can be an uppercase letter
-                                                        // Allows special characters and numbers in subsequent spaces. PG-13 is valid but fails for a Genre
+            // Allows special characters and numbers in subsequent spaces. PG-13 is valid but fails for a Genre
             message = "The field Rating must match the regular expression '^[A-Z]+[a-zA-Z0-9\"\"'\\s-]*$'.")
     private String rating;      // G, PG, PG-13, R, NC-17
 
@@ -68,140 +62,56 @@ public class Movie implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createdDateTime;
 
-    private LocalDateTime updatedDateTime;package common.listener;
-
-import dmit2015.entity.Movie;
-import dmit2015.repository.MovieRepository;
-import jakarta.inject.Inject;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.logging.Logger;
+    private LocalDateTime updatedDateTime;
 
     @WebListener
     public class ApplicationStartupListener implements ServletContextListener {
 
-        private Logger _logger = Logger.getLogger(ApplicationStartupListener.class.getName());
-
-        @Inject
-        MovieRepository _movieRepository;
-
-        public ApplicationStartupListener() {
+        @PrePersist
+        private void beforePersist() {
+            createdDateTime = LocalDateTime.now();
         }
 
-        @Override
-        public void contextInitialized(ServletContextEvent sce) {
-            /* This method is called when the servlet context is initialized(when the Web application is deployed). */
+        @PreUpdate
+        private void beforeUpdate() {
+            updatedDateTime = LocalDateTime.now();
+        }
 
-            // _movieRepository.deleteAll();
+        public static Optional<Movie> parseCsv(String line) {
+            Optional<Movie> optionalMovie = Optional.empty();
+            final var DELIMITER = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+            String[] tokens = line.split(DELIMITER, -1);  // The -1 limit allows for any number of fields and not discard trailing empty fields
+            /**
+             * The order of the columns are:
+             * 0 - title
+             * 1 - releaseDate
+             * 2 - genre
+             * 3 - price
+             * 4 - rating
+             */
+            if (tokens.length == 5) {
+                Movie parsedMovie = new Movie();
 
-            //        try {
-//            Movie movie1 = new Movie();
-//            movie1.setTitle("When Harry Met Sally");
-//            movie1.setReleaseDate(LocalDate.parse("1989-02-12"));
-//            movie1.setGenre("Romantic Comedy");
-//            movie1.setPrice(BigDecimal.valueOf(7.99));
-//            movie1.setRating("G");
-//            _movieRepository.add(movie1);
-//
-//            Movie movie2 = new Movie();
-//            movie2.setTitle("Ghostbusters");
-//            movie2.setReleaseDate(LocalDate.parse("1984-03-13"));
-//            movie2.setGenre("Comedy");
-//            movie2.setPrice(BigDecimal.valueOf(8.99));
-//            movie2.setRating("PG");
-//            _movieRepository.add(movie2);
-//
-//            Movie movie3 = new Movie();
-//            movie3.setTitle("Ghostbusters 2");
-//            movie3.setReleaseDate(LocalDate.parse("1986-02-23"));
-//            movie3.setGenre("Comedy");
-//            movie3.setPrice(BigDecimal.valueOf(9.99));
-//            movie3.setRating("PG");
-//            _movieRepository.add(movie3);
-//
-//            Movie movie4 = new Movie();
-//            movie4.setTitle("Rio Bravo");
-//            movie4.setReleaseDate(LocalDate.parse("1959-04-15"));
-//            movie4.setGenre("Western");
-//            movie4.setPrice(BigDecimal.valueOf(7.99));
-//            movie4.setRating("PG-13");
-//            _movieRepository.add(movie4);
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-
-
-            if (_movieRepository.count() == 0) {
                 try {
-                    try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/data/csv/movies.csv"))) ) {
-                        String line;
-                        final var delimiter = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
-                        // Skip the first line as it is containing column headings
-                        reader.readLine();
-                        while ((line = reader.readLine()) != null) {
-                            Optional<Movie> optionalMovie = Movie.parseCsv(line);
-                            if (optionalMovie.isPresent()) {
-                                Movie csvMovie = optionalMovie.get();
-                                _movieRepository.add(csvMovie);
-                            }
-                        }
-                    }
+                    String title = tokens[0].replaceAll("\"", "");
+                    LocalDate releaseDate = LocalDate.parse(tokens[1]);
+                    String genre = tokens[2].replaceAll("\"", "");
+                    BigDecimal price = BigDecimal.valueOf(Double.parseDouble(tokens[3]));
+                    String rating = tokens[4].replaceAll("\"", "");
 
+                    parsedMovie.setTitle(title);
+                    parsedMovie.setReleaseDate(releaseDate);
+                    parsedMovie.setGenre(genre);
+                    parsedMovie.setPrice(price);
+                    parsedMovie.setRating(rating);
+
+                    optionalMovie = Optional.of(parsedMovie);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
 
+            return optionalMovie;
         }
-    }
-
-    @PrePersist
-    private void beforePersist() {
-        createdDateTime = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    private void beforeUpdate() {
-        updatedDateTime = LocalDateTime.now();
-    }
-
-    public static Optional<Movie> parseCsv(String line) {
-        Optional<Movie> optionalMovie = Optional.empty();
-        final var DELIMITER = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
-        String[] tokens = line.split(DELIMITER, -1);  // The -1 limit allows for any number of fields and not discard trailing empty fields
-        /**
-         * The order of the columns are:
-         * 0 - title
-         * 1 - releaseDate
-         * 2 - genre
-         * 3 - price
-         * 4 - rating
-         */
-        if (tokens.length == 5) {
-            Movie parsedMovie = new Movie();
-
-            try {
-                String title = tokens[0].replaceAll("\"","");
-                LocalDate releaseDate = LocalDate.parse(tokens[1]);
-                String genre = tokens[2].replaceAll("\"","");
-                BigDecimal price = BigDecimal.valueOf(Double.parseDouble(tokens[3]));
-                String rating = tokens[4].replaceAll("\"","");
-
-                parsedMovie.setTitle(title);
-                parsedMovie.setReleaseDate(releaseDate);
-                parsedMovie.setGenre(genre);
-                parsedMovie.setPrice(price);
-                parsedMovie.setRating(rating);
-
-                optionalMovie = Optional.of(parsedMovie);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return optionalMovie;
     }
 }
